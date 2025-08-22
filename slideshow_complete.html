@@ -1,0 +1,2234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>n8n Presentation - Automate 20+ Hours/Month</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #0a192f;
+        color: white;
+        overflow: hidden;
+      }
+
+      .slideshow-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .slide {
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transform: translateX(100px);
+        transition: all 0.5s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .slide.prev {
+        transform: translateX(-100px);
+      }
+
+      /* Navigation */
+      .nav-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px 20px;
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+      }
+
+      .nav-btn {
+        background: rgba(100, 255, 218, 0.2);
+        border: 1px solid #64ffda;
+        color: #64ffda;
+        padding: 8px 12px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+      }
+
+      .nav-btn:hover {
+        background: rgba(100, 255, 218, 0.3);
+        transform: scale(1.05);
+      }
+
+      .nav-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .slide-counter {
+        color: #64ffda;
+        font-weight: 600;
+        margin: 0 10px;
+      }
+
+      .progress-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: #64ffda;
+        transition: width 0.3s ease;
+        z-index: 1001;
+      }
+
+      /* Keyboard shortcuts info */
+      .shortcuts-info {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .shortcuts-info.show {
+        opacity: 1;
+      }
+
+      .shortcuts-info h4 {
+        color: #64ffda;
+        margin-bottom: 8px;
+      }
+
+      .shortcuts-info p {
+        margin: 2px 0;
+        color: #ccc;
+      }
+
+      /* Common slide styles */
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          135deg,
+          rgba(10, 25, 47, 0.85) 0%,
+          rgba(10, 25, 47, 0.75) 50%,
+          rgba(0, 128, 128, 0.65) 100%
+        );
+        display: flex;
+        flex-direction: column;
+        padding: 60px 80px;
+        gap: 70px;
+      }
+
+      .title {
+        font-size: 48px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 40px;
+        position: relative;
+        display: inline-block;
+      }
+
+      .title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background-color: #64ffda;
+      }
+
+      .content {
+        position: relative;
+        top: -70px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .highlight {
+        color: #64ffda;
+        font-weight: 700;
+      }
+
+      /* Slide 1 specific styles */
+      .title-container {
+        text-align: center;
+        margin-bottom: 60px;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .main-title {
+        font-size: 64px;
+        font-weight: 800;
+        color: #ffffff;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .subtitle {
+        font-size: 28px;
+        font-weight: 400;
+        color: #64ffda;
+        letter-spacing: 1px;
+      }
+
+      .poll-container {
+        position: absolute;
+        bottom: 80px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        animation: fadeInUp 1.2s ease-out;
+      }
+
+      .poll {
+        background-color: rgba(100, 255, 218, 0.1);
+        border-left: 4px solid #64ffda;
+        border-radius: 8px;
+        padding: 20px 40px;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        text-align: center;
+      }
+
+      .poll-text {
+        font-size: 24px;
+        font-weight: 600;
+        color: #ffffff;
+      }
+
+      /* Workflow styles */
+      .workflow-container {
+        display: flex;
+        flex-grow: 1;
+        gap: 30px;
+        margin-bottom: 30px;
+        width: 100%;
+      }
+
+      .workflow-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .workflow-header {
+        padding: 15px 20px;
+        font-size: 24px;
+        font-weight: 700;
+        text-align: center;
+        color: #ffffff;
+      }
+
+      .before-header {
+        background-color: rgba(255, 71, 87, 0.7);
+      }
+
+      .after-header {
+        background-color: rgba(100, 255, 218, 0.2);
+      }
+
+      .workflow-content {
+        flex-grow: 1;
+        padding: 25px;
+        background-color: rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .workflow-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .workflow-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 10px;
+        position: relative;
+      }
+
+      .step-icon {
+        width: 70px;
+        height: 70px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .step-icon:hover {
+        transform: translateY(-5px);
+      }
+
+      .step-icon i {
+        font-size: 32px;
+        color: #ffffff;
+      }
+
+      .step-name {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .step-arrow {
+        color: #ff4757;
+        font-size: 24px;
+        margin: 0 5px;
+      }
+
+      .pain-point {
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        background-color: #ff4757;
+        color: #ffffff;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .workflow-image {
+        width: 100%;
+        max-width: 800px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      }
+
+      .workflow-image img {
+        width: 100%;
+        height: auto;
+        min-height: 400px;
+        max-height: 650px;
+        object-fit: contain;
+        display: block;
+      }
+
+      /* Feature styles */
+      .features {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 30px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(5px);
+        transition: transform 0.3s ease;
+        border-left: 3px solid #64ffda;
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
+      }
+
+      .feature-item:hover {
+        transform: translateX(10px);
+      }
+
+      .feature-icon {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(100, 255, 218, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        flex-shrink: 0;
+      }
+
+      .feature-icon i {
+        color: #64ffda;
+        font-size: 28px;
+      }
+
+      .feature-content {
+        flex-grow: 1;
+      }
+
+      .feature-title {
+        color: #64ffda;
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .feature-description {
+        color: #ccd6f6;
+        font-size: 18px;
+        line-height: 1.5;
+      }
+
+      /* Comparison table styles */
+      .comparison-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        margin-top: 20px;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .comparison-table th {
+        padding: 20px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .comparison-table td {
+        padding: 20px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+        color: #ccd6f6;
+        vertical-align: middle;
+      }
+
+      .comparison-table tr:nth-child(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .comparison-table tr:hover {
+        background-color: rgba(100, 255, 218, 0.08);
+      }
+
+      .header-n8n {
+        background-color: rgba(100, 255, 218, 0.2);
+      }
+
+      .header-zapier {
+        background-color: rgba(255, 152, 0, 0.2);
+      }
+
+      .header-make {
+        background-color: rgba(103, 58, 183, 0.2);
+      }
+
+      /* Problem diagram styles */
+      .problem-diagram {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 30px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        backdrop-filter: blur(5px);
+        margin: 20px 0 40px;
+      }
+
+      .problem-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 25px;
+        position: relative;
+      }
+
+      .problem-icon {
+        width: 90px;
+        height: 90px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .problem-icon i {
+        font-size: 36px;
+        color: #ffffff;
+      }
+
+      .problem-name {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .arrow {
+        color: #64ffda;
+        font-size: 36px;
+        margin: 0 5px;
+        animation: pulse 2s infinite;
+      }
+
+      .problems {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      .problem {
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 20px 30px;
+        margin: 0 15px;
+        text-align: center;
+        backdrop-filter: blur(5px);
+        border-left: 3px solid #64ffda;
+        transition: transform 0.3s ease;
+      }
+
+      .problem:hover {
+        transform: translateY(-5px);
+      }
+
+      .problem-text {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .problem-text-icon {
+        color: #ff4757;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      /* Steps styles */
+      .steps-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 40px 0;
+      }
+
+      .step {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 30px;
+        margin: 0 15px;
+        position: relative;
+        transition: transform 0.3s ease;
+        backdrop-filter: blur(5px);
+        animation: fadeInUp 0.8s ease-out;
+        animation-fill-mode: both;
+        border-bottom: 3px solid #64ffda;
+        max-width: 350px;
+      }
+
+      .step:hover {
+        transform: translateY(-10px);
+      }
+
+      .step-number {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 50px;
+        background-color: #64ffda;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0a192f;
+        font-size: 24px;
+        font-weight: 700;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      }
+
+      .step-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 15px;
+      }
+
+      .step-description {
+        font-size: 16px;
+        color: #ccd6f6;
+        line-height: 1.5;
+      }
+
+      /* Logo and workflow section */
+      .logo-workflow {
+        position: relative;
+        top: -95px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo {
+        margin-bottom: 40px;
+        animation: fadeIn 1s ease-out;
+      }
+
+      .logo img {
+        width: 305px;
+        height: auto;
+      }
+
+      .workflow-screenshot {
+        width: 100%;
+        max-width: 700px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(100, 255, 218, 0.3);
+        animation: fadeInUp 1.2s ease-out;
+      }
+
+      .workflow-screenshot img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Tech edge styles */
+      .tech-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .tech-header {
+        padding: 20px;
+        font-size: 24px;
+        font-weight: 700;
+        color: #ffffff;
+        background-color: rgba(100, 255, 218, 0.15);
+        display: flex;
+        align-items: center;
+      }
+
+      .tech-icon {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(100, 255, 218, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+      }
+
+      .tech-icon i {
+        color: #64ffda;
+        font-size: 20px;
+      }
+
+      .tech-content {
+        flex-grow: 1;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* Laptop mockup styles */
+      .laptop-mockup {
+        position: relative;
+        width: 100%;
+        max-width: 550px;
+        margin: 0 auto;
+      }
+
+      .laptop-screen {
+        background-color: #1e1e1e;
+        border-radius: 8px 8px 0 0;
+        padding: 20px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(100, 255, 218, 0.3);
+        overflow: hidden;
+      }
+
+      .code-content {
+        font-family: "Courier New", monospace;
+        color: #f8f8f2;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .keyword {
+        color: #ff79c6;
+      }
+
+      .function {
+        color: #50fa7b;
+      }
+
+      .laptop-base {
+        height: 20px;
+        background-color: #c7c7c7;
+        border-radius: 0 0 10px 10px;
+      }
+
+      /* Security item styles */
+      .security-features {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 30px;
+        margin: 20px auto 40px;
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      .security-item {
+        flex: 1;
+        max-width: 350px;
+        background-color: rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 35px 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.5s ease-out;
+        animation-fill-mode: both;
+        border: 1px solid rgba(100, 255, 218, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .security-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #64ffda 0%, #00acc1 100%);
+      }
+
+      .security-item:hover {
+        transform: translateY(-15px) scale(1.05);
+        background-color: rgba(100, 255, 218, 0.12);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .security-icon {
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(
+          135deg,
+          rgba(100, 255, 218, 0.2) 0%,
+          rgba(0, 172, 193, 0.2) 100%
+        );
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        border: 2px solid rgba(100, 255, 218, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .security-item:hover .security-icon {
+        transform: scale(1.1) rotateY(10deg);
+        box-shadow: 0 20px 40px rgba(100, 255, 218, 0.3);
+      }
+
+      .security-icon i {
+        color: #64ffda;
+        font-size: 45px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .security-title {
+        color: #ffffff;
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .security-description {
+        color: #ccd6f6;
+        font-size: 18px;
+        line-height: 1.6;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      /* Q&A styles */
+      .qa-container {
+        text-align: center;
+        max-width: 900px;
+        animation: fadeInUp 1s ease-out;
+      }
+
+      .qa-icon {
+        font-size: 100px;
+        color: #64ffda;
+        margin-bottom: 40px;
+        animation: pulse 2s infinite;
+      }
+
+      .qa-title {
+        font-size: 70px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 30px;
+        line-height: 1.2;
+      }
+
+      .qa-subtitle {
+        font-size: 32px;
+        font-weight: 600;
+        color: #ffffff;
+        line-height: 1.4;
+        margin-bottom: 60px;
+      }
+
+      .contact-info {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        animation: fadeInUp 1.2s ease-out;
+      }
+
+      .contact-item {
+        display: flex;
+        align-items: center;
+        margin: 0 15px;
+        background-color: rgba(255, 255, 255, 0.08);
+        padding: 15px 25px;
+        border-radius: 12px;
+        backdrop-filter: blur(5px);
+        transition: transform 0.3s ease;
+        border-bottom: 3px solid #64ffda;
+      }
+
+      .contact-item:hover {
+        transform: translateY(-8px);
+      }
+
+      .contact-icon {
+        color: #64ffda;
+        font-size: 24px;
+        margin-right: 15px;
+      }
+
+      .contact-text {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      /* Checklist styles */
+      .checklist {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 40px;
+        width: 100%;
+        max-width: 700px;
+        backdrop-filter: blur(5px);
+        border-left: 5px solid #64ffda;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 1s ease-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 14px;
+        padding: 15px;
+        border-radius: 12px;
+      }
+
+      .check-icon {
+        width: 60px;
+        height: 60px;
+        background-color: rgba(100, 255, 218, 0.15);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 20px;
+        flex-shrink: 0;
+      }
+
+      .check-icon i {
+        color: #64ffda;
+        font-size: 28px;
+      }
+
+      .check-text {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .benefits {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+        animation: fadeInUp 1.2s ease-out;
+      }
+
+      .benefit {
+        background-color: rgba(100, 255, 218, 0.15);
+        border-radius: 12px;
+        padding: 20px 30px;
+        margin: 0 15px;
+        text-align: center;
+        backdrop-filter: blur(5px);
+        transition: transform 0.3s ease;
+        border-bottom: 3px solid #64ffda;
+      }
+
+      .benefit:hover {
+        transform: translateY(-10px);
+      }
+
+      .benefit-icon {
+        color: #64ffda;
+        font-size: 36px;
+        margin-bottom: 15px;
+      }
+
+      .benefit-text {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      /* Animation keyframes */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.7;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
+        }
+      }
+
+      /* Tech dots background */
+      .tech-dots {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 80px;
+        background-image: radial-gradient(circle, #64ffda 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: 0.1;
+      }
+
+      /* Responsive design */
+      @media (max-width: 1024px) {
+        .overlay {
+          padding: 40px 60px;
+        }
+        .title {
+          font-size: 36px;
+        }
+        .main-title {
+          font-size: 48px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .overlay {
+          padding: 20px 30px;
+        }
+        .workflow-container {
+          flex-direction: column;
+          gap: 20px;
+        }
+        .nav-controls {
+          bottom: 10px;
+          padding: 8px 15px;
+        }
+        .steps-container {
+          flex-direction: column;
+          gap: 20px;
+        }
+        .security-features {
+          flex-direction: column;
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slideshow-container">
+      <div class="progress-bar" id="progress"></div>
+
+      <!-- Slide 1: Title Slide -->
+      <div
+        class="slide active"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/2a62e8d0811b.jpg');
+        "
+      >
+        <div class="overlay">
+          <div class="title-container">
+            <h1 class="main-title">
+              n8n: Automate <span class="highlight">20+ Hours/Month</span> of
+              Manual Work
+            </h1>
+            <div class="subtitle">in just 30 Minutes</div>
+          </div>
+
+          <div class="poll-container">
+            <div class="poll">
+              <div class="poll-text">
+                Who loses >5 hrs/week to repetitive tasks?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 2: The Problem -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/758d5c2dfbc3.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">The Problem</h1>
+          <div class="content">
+            <div class="problem-diagram">
+              <div class="problem-item">
+                <div class="problem-icon">
+                  <i class="fab fa-slack"></i>
+                </div>
+                <div class="problem-name">Slack</div>
+              </div>
+              <i class="fas fa-arrow-right arrow"></i>
+              <div class="problem-item">
+                <div class="problem-icon">
+                  <i class="fas fa-file-excel"></i>
+                </div>
+                <div class="problem-name">Excel</div>
+              </div>
+              <i class="fas fa-arrow-right arrow"></i>
+              <div class="problem-item">
+                <div class="problem-icon">
+                  <i class="fas fa-envelope"></i>
+                </div>
+                <div class="problem-name">Email</div>
+              </div>
+              <i class="fas fa-arrow-right arrow"></i>
+              <div class="problem-item">
+                <div class="problem-icon">
+                  <i class="fab fa-jira"></i>
+                </div>
+                <div class="problem-name">Jira</div>
+              </div>
+            </div>
+            <div class="problems">
+              <div class="problem">
+                <i class="fas fa-hourglass-half problem-text-icon"></i>
+                <div class="problem-text">Slow</div>
+              </div>
+              <div class="problem">
+                <i class="fas fa-exclamation-triangle problem-text-icon"></i>
+                <div class="problem-text">Error-prone</div>
+              </div>
+              <div class="problem">
+                <i class="fas fa-frown problem-text-icon"></i>
+                <div class="problem-text">Boring</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 3: What is n8n? -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/8b18e0e99c14.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">What is n8n?</h1>
+          <div class="content">
+            <div style="display: flex; gap: 40px; width: 100%">
+              <div class="features">
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="fas fa-server"></i>
+                  </div>
+                  <div class="feature-content">
+                    <div class="feature-title">Self-hosted</div>
+                    <div class="feature-description">
+                      Full control over your data and infrastructure
+                    </div>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="fab fa-js-square"></i>
+                  </div>
+                  <div class="feature-content">
+                    <div class="feature-title">JavaScript flexible</div>
+                    <div class="feature-description">
+                      Code when you need it, no-code when you don't
+                    </div>
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <i class="fas fa-plug"></i>
+                  </div>
+                  <div class="feature-content">
+                    <div class="feature-title">400+ integrations</div>
+                    <div class="feature-description">
+                      Connect anything to everything in your stack
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="logo-workflow">
+                <div class="logo">
+                  <img
+                    src="https://sfile.chatglm.cn/images-ppt/eca7a8ae1240.png"
+                    alt="n8n logo"
+                  />
+                </div>
+                <div class="workflow-screenshot">
+                  <img
+                    src="https://i.postimg.cc/6qtb8TB4/Chat-GPT-Image-Aug-22-2025-10-11-52-AM.png"
+                    alt="n8n workflow screenshot"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 4: Why n8n Over Zapier/Make -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/20366d1f38a3.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">Why n8n Over Zapier/Make</h1>
+          <div class="content">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="header-n8n">n8n</th>
+                  <th class="header-zapier">Zapier</th>
+                  <th class="header-make">Make</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <i
+                      class="fas fa-cloud"
+                      style="color: #64ffda; margin-right: 15px"
+                    ></i
+                    >Hosting
+                  </td>
+                  <td><span class="highlight">Self-hosted</span> or Cloud</td>
+                  <td>
+                    <i class="fas fa-times" style="color: #ff4757"></i> Cloud
+                    only
+                  </td>
+                  <td>
+                    <i class="fas fa-times" style="color: #ff4757"></i> Cloud
+                    only
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <i
+                      class="fas fa-dollar-sign"
+                      style="color: #64ffda; margin-right: 15px"
+                    ></i
+                    >Cost
+                  </td>
+                  <td><span class="highlight">Free</span> self-hosted</td>
+                  <td>Expensive per task</td>
+                  <td>Moderate pricing</td>
+                </tr>
+                <tr>
+                  <td>
+                    <i
+                      class="fas fa-code"
+                      style="color: #64ffda; margin-right: 15px"
+                    ></i
+                    >Custom Code
+                  </td>
+                  <td>
+                    <i class="fas fa-check" style="color: #64ffda"></i>
+                    <span class="highlight">Full JavaScript</span> support
+                  </td>
+                  <td>
+                    <i class="fas fa-times" style="color: #ff4757"></i> Limited
+                    options
+                  </td>
+                  <td>
+                    <i class="fas fa-check" style="color: #64ffda"></i> Good
+                    support
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 5: Demo Workflow: AI Ticket Triage with Security Layer -->
+      <div
+        class="slide active"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/b4069dd5dc68.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">
+            Demo Workflow: AI Ticket Triage with Security Layer
+          </h1>
+          <div class="content">
+            <div class="workflow-container">
+              <div class="workflow-column">
+                <div class="workflow-header before-header">Before</div>
+                <div class="workflow-content">
+                  <div class="workflow-steps">
+                    <div class="workflow-step">
+                      <div class="step-icon">
+                        <i class="fas fa-envelope-open-text"></i>
+                      </div>
+                      <div class="step-name">Incoming Request</div>
+                      <div class="pain-point">!</div>
+                    </div>
+                    <i class="fas fa-arrow-right step-arrow"></i>
+                    <div class="workflow-step">
+                      <div class="step-icon">
+                        <i class="fas fa-brain"></i>
+                      </div>
+                      <div class="step-name">AI Summarizes</div>
+                      <div class="pain-point">!</div>
+                    </div>
+                    <i class="fas fa-arrow-right step-arrow"></i>
+                    <div class="workflow-step">
+                      <div class="step-icon">
+                        <i class="fas fa-shield-alt"></i>
+                      </div>
+                      <div class="step-name">Security Filter</div>
+                      <div class="pain-point">!</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="workflow-column">
+                <div class="workflow-header after-header">After</div>
+                <div class="workflow-content">
+                  <div class="workflow-image">
+                    <img
+                      src="https://i.postimg.cc/L5tgh6N7/Screenshot-2025-08-22-at-9-51-20-AM.png"
+                      alt="n8n workflow screenshot"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: center; margin-top: 20px"
+            >
+              <div
+                style="
+                  background-color: rgba(100, 255, 218, 0.15);
+                  border-radius: 12px;
+                  padding: 15px 30px;
+                  display: flex;
+                  align-items: center;
+                  border-left: 4px solid #64ffda;
+                "
+              >
+                <i
+                  class="fas fa-clock"
+                  style="color: #64ffda; font-size: 28px; margin-right: 15px"
+                ></i>
+                <div style="color: #ffffff; font-size: 22px; font-weight: 600">
+                  Saves <span class="highlight">15 min/day</span> per lead
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+      <!-- Slide 8: Technical Edge -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/dac8237414d8.png');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">Technical Edge</h1>
+          <div class="content">
+            <div style="display: flex; gap: 40px">
+              <div class="tech-column">
+                <div class="tech-header">
+                  <div class="tech-icon">
+                    <i class="fas fa-code"></i>
+                  </div>
+                  JavaScript Power
+                </div>
+                <div class="tech-content">
+                  <div class="laptop-mockup">
+                    <div class="laptop-screen">
+                      <div class="code-content">
+                        <div>
+                          <span class="keyword">const</span> items =
+                          <span class="function">getInputData</span>();
+                        </div>
+                        <div></div>
+                        <div>
+                          <span class="keyword">for</span> (<span
+                            class="keyword"
+                            >let</span
+                          >
+                          i = 0; i < items.length; i++) {
+                        </div>
+                        <div>
+                          &nbsp;&nbsp;<span class="keyword">const</span> result
+                          = <span class="function">processData</span>(items[i]);
+                        </div>
+                        <div>
+                          &nbsp;&nbsp;<span class="function">returnData</span
+                          >(result);
+                        </div>
+                        <div>}</div>
+                      </div>
+                    </div>
+                    <div class="laptop-base"></div>
+                  </div>
+                  <div style="margin-top: 30px">
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        <span class="highlight">Full JS</span> in every node
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        Custom <span class="highlight">functions</span> & logic
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 15px;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        <span class="highlight">Debug</span> directly in UI
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tech-column">
+                <div class="tech-header">
+                  <div class="tech-icon">
+                    <i class="fas fa-cloud"></i>
+                  </div>
+                  Enterprise Deployment
+                </div>
+                <div class="tech-content">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      margin-bottom: 40px;
+                    "
+                  >
+                    <div style="display: flex; align-items: center; gap: 40px">
+                      <div style="text-align: center">
+                        <div
+                          style="
+                            width: 120px;
+                            height: 120px;
+                            background-color: rgba(255, 255, 255, 0.1);
+                            border-radius: 16px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 10px;
+                            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+                          "
+                        >
+                          <i
+                            class="fab fa-docker"
+                            style="color: #2496ed; font-size: 70px"
+                          ></i>
+                        </div>
+                        <div
+                          style="
+                            color: #ffffff;
+                            font-size: 18px;
+                            font-weight: 600;
+                          "
+                        >
+                          Docker
+                        </div>
+                      </div>
+                      <div style="text-align: center">
+                        <div
+                          style="
+                            width: 120px;
+                            height: 120px;
+                            background-color: rgba(255, 255, 255, 0.1);
+                            border-radius: 16px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin-bottom: 10px;
+                            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+                          "
+                        >
+                          <i
+                            class="fas fa-dharmachakra"
+                            style="color: #326ce5; font-size: 70px"
+                          ></i>
+                        </div>
+                        <div
+                          style="
+                            color: #ffffff;
+                            font-size: 18px;
+                            font-weight: 600;
+                          "
+                        >
+                          Kubernetes
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 15px">
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        <span class="highlight">Self-hosted</span> containers
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        <span class="highlight">Auto-scale</span> with demand
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        align-items: center;
+                        background-color: rgba(255, 255, 255, 0.05);
+                        padding: 12px 15px;
+                        border-radius: 8px;
+                      "
+                    >
+                      <i
+                        class="fas fa-check-circle"
+                        style="
+                          color: #64ffda;
+                          font-size: 20px;
+                          margin-right: 15px;
+                        "
+                      ></i>
+                      <div
+                        style="
+                          color: #ffffff;
+                          font-size: 16px;
+                          font-weight: 500;
+                        "
+                      >
+                        <span class="highlight">Zero-downtime</span> updates
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 9: How We Start -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/7d607fc42953.jpeg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">How We Start</h1>
+          <div class="content">
+            <div class="steps-container">
+              <div class="step">
+                <div class="step-number">1</div>
+                <div class="security-icon">
+                  <i class="fas fa-search"></i>
+                </div>
+                <div class="step-title">Pick a Repetitive Task</div>
+                <div class="step-description">
+                  Identify manual processes that consume valuable time and
+                  resources
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-number">2</div>
+                <div class="security-icon">
+                  <i class="fas fa-th-large"></i>
+                </div>
+                <div class="step-title">Use Template</div>
+                <div class="step-description">
+                  Leverage pre-built workflows or customize to fit your specific
+                  needs
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-number">3</div>
+                <div class="security-icon">
+                  <i class="fas fa-rocket"></i>
+                </div>
+                <div class="step-title">Deploy</div>
+                <div class="step-description">
+                  Launch your automated workflow and start saving time
+                  immediately
+                </div>
+              </div>
+            </div>
+            <div class="benefits">
+              <div class="benefit">
+                <i class="fas fa-tachometer-alt benefit-icon"></i>
+                <div class="benefit-text">
+                  <span class="highlight">Fast</span> Implementation
+                </div>
+              </div>
+              <div class="benefit">
+                <i class="fas fa-code benefit-icon"></i>
+                <div class="benefit-text">
+                  <span class="highlight">No Code</span> Required
+                </div>
+              </div>
+              <div class="benefit">
+                <i class="fas fa-chart-line benefit-icon"></i>
+                <div class="benefit-text">
+                  <span class="highlight">Immediate</span> ROI
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 10: Security & Maintenance -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/9879eb940c57.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">Security & Maintenance</h1>
+          <div class="content">
+            <div class="security-features">
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="security-title">Data Control</div>
+                <div class="security-description">
+                  <span class="highlight">Data never leaves</span> your
+                  infrastructure. Complete privacy and security.
+                </div>
+              </div>
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="security-title">Easy Updates</div>
+                <div class="security-description">
+                  Simple <span class="highlight">Docker updates</span> with one
+                  command. Zero downtime deployments.
+                </div>
+              </div>
+              <div class="security-item">
+                <div class="security-icon">
+                  <i class="fas fa-microchip"></i>
+                </div>
+                <div class="security-title">Efficiency</div>
+                <div class="security-description">
+                  <span class="highlight">Low overhead</span> resource usage.
+                  Optimized for performance.
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                background: linear-gradient(
+                  135deg,
+                  rgba(100, 255, 218, 0.15) 0%,
+                  rgba(0, 172, 193, 0.15) 100%
+                );
+                border-radius: 20px;
+                padding: 35px;
+                margin-top: 30px;
+                border: 1px solid rgba(100, 255, 218, 0.3);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(10px);
+                max-width: 1200px;
+                margin-left: auto;
+                margin-right: auto;
+              "
+            >
+              <div
+                style="
+                  color: #ffffff;
+                  font-size: 28px;
+                  font-weight: 700;
+                  margin-bottom: 30px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  text-align: center;
+                "
+              >
+                <i
+                  class="fas fa-lock"
+                  style="
+                    color: #64ffda;
+                    font-size: 35px;
+                    margin-right: 20px;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                  "
+                ></i>
+                Enterprise-Grade Security
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  gap: 25px;
+                  flex-wrap: wrap;
+                "
+              >
+                <div
+                  style="
+                    flex: 1;
+                    min-width: 280px;
+                    max-width: 350px;
+                    display: flex;
+                    align-items: center;
+                    background-color: rgba(255, 255, 255, 0.08);
+                    padding: 20px;
+                    border-radius: 15px;
+                    border: 1px solid rgba(100, 255, 218, 0.2);
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                  "
+                  onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(100, 255, 218, 0.2)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)'"
+                >
+                  <i
+                    class="fas fa-key"
+                    style="
+                      color: #64ffda;
+                      font-size: 28px;
+                      margin-right: 20px;
+                      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    "
+                  ></i>
+                  <div
+                    style="color: #ffffff; font-size: 19px; font-weight: 600"
+                  >
+                    Encrypted credentials
+                  </div>
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    min-width: 280px;
+                    max-width: 350px;
+                    display: flex;
+                    align-items: center;
+                    background-color: rgba(255, 255, 255, 0.08);
+                    padding: 20px;
+                    border-radius: 15px;
+                    border: 1px solid rgba(100, 255, 218, 0.2);
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                  "
+                  onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(100, 255, 218, 0.2)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)'"
+                >
+                  <i
+                    class="fas fa-users-cog"
+                    style="
+                      color: #64ffda;
+                      font-size: 28px;
+                      margin-right: 20px;
+                      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    "
+                  ></i>
+                  <div
+                    style="color: #ffffff; font-size: 19px; font-weight: 600"
+                  >
+                    Role-based access
+                  </div>
+                </div>
+                <div
+                  style="
+                    flex: 1;
+                    min-width: 280px;
+                    max-width: 350px;
+                    display: flex;
+                    align-items: center;
+                    background-color: rgba(255, 255, 255, 0.08);
+                    padding: 20px;
+                    border-radius: 15px;
+                    border: 1px solid rgba(100, 255, 218, 0.2);
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+                  "
+                  onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(100, 255, 218, 0.2)'"
+                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 20px rgba(0, 0, 0, 0.2)'"
+                >
+                  <i
+                    class="fas fa-history"
+                    style="
+                      color: #64ffda;
+                      font-size: 28px;
+                      margin-right: 20px;
+                      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                    "
+                  ></i>
+                  <div
+                    style="color: #ffffff; font-size: 19px; font-weight: 600"
+                  >
+                    Execution logs
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 11: Call to Action -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/77bf57ad8620.jpg');
+        "
+      >
+        <div class="overlay">
+          <h1 class="title">Call to Action</h1>
+          <div class="content">
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                flex-grow: 1;
+              "
+            >
+              <div class="checklist">
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-search"></i>
+                  </div>
+                  <div class="check-text">
+                    <span class="highlight">Identify</span> workflow
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-robot"></i>
+                  </div>
+                  <div class="check-text">
+                    <span class="highlight">Automate</span>
+                  </div>
+                </div>
+                <div class="checklist-item">
+                  <div class="check-icon">
+                    <i class="fas fa-share-alt"></i>
+                  </div>
+                  <div class="check-text">
+                    <span class="highlight">Share</span> results
+                  </div>
+                </div>
+              </div>
+              <div class="benefits">
+                <div class="benefit">
+                  <i class="fas fa-clock benefit-icon"></i>
+                  <div class="benefit-text">Save 20+ hours/month</div>
+                </div>
+                <div class="benefit">
+                  <i class="fas fa-users benefit-icon"></i>
+                  <div class="benefit-text">Boost team productivity</div>
+                </div>
+                <div class="benefit">
+                  <i class="fas fa-chart-line benefit-icon"></i>
+                  <div class="benefit-text">Scale your workflows</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+
+      <!-- Slide 12: Q&A -->
+      <div
+        class="slide"
+        style="
+          background-image: url('https://sfile.chatglm.cn/images-ppt/5f6c46e9e086.jpg');
+        "
+      >
+        <div class="overlay">
+          <div class="content">
+            <div class="qa-container">
+              <i class="fas fa-question-circle qa-icon"></i>
+              <h1 class="qa-title">Questions?</h1>
+              <p class="qa-subtitle">
+                Let's <span class="highlight">build</span> something
+                <span class="highlight">together</span>.
+              </p>
+            </div>
+            <div class="contact-info">
+              <div class="contact-item">
+                <i class="fas fa-envelope contact-icon"></i>
+                <div class="contact-text">team@company.com</div>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-comments contact-icon"></i>
+                <div class="contact-text">#n8n-help</div>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-book contact-icon"></i>
+                <div class="contact-text">docs.n8n.io</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tech-dots"></div>
+      </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="nav-controls">
+      <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      <span class="slide-counter">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+      </span>
+      <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+      <button class="nav-btn" onclick="toggleFullscreen()">
+        <i class="fas fa-expand"></i>
+      </button>
+      <button class="nav-btn" onclick="toggleShortcuts()">
+        <i class="fas fa-keyboard"></i>
+      </button>
+    </div>
+
+    <!-- Keyboard Shortcuts Info -->
+    <div class="shortcuts-info" id="shortcuts">
+      <h4>Keyboard Shortcuts</h4>
+      <p><strong>←/→</strong> Previous/Next slide</p>
+      <p><strong>Home/End</strong> First/Last slide</p>
+      <p><strong>Space/Enter</strong> Next slide</p>
+      <p><strong>F</strong> Toggle fullscreen</p>
+      <p><strong>Esc</strong> Exit fullscreen</p>
+      <p><strong>?</strong> Toggle this help</p>
+    </div>
+
+    <script>
+      let currentSlideIndex = 0;
+      const slides = document.querySelectorAll(".slide");
+      const totalSlides = slides.length;
+      let shortcutsVisible = false;
+
+      // Update slide counter
+      document.getElementById("totalSlides").textContent = totalSlides;
+
+      function showSlide(index) {
+        // Remove active class from all slides
+        slides.forEach((slide) => {
+          slide.classList.remove("active", "prev");
+        });
+
+        // Add active class to current slide
+        slides[index].classList.add("active");
+
+        // Add prev class to previous slide for animation
+        if (index > 0) {
+          slides[index - 1].classList.add("prev");
+        }
+
+        // Update counter
+        document.getElementById("currentSlide").textContent = index + 1;
+
+        // Update progress bar
+        const progress = ((index + 1) / totalSlides) * 100;
+        document.getElementById("progress").style.width = progress + "%";
+
+        // Update navigation buttons
+        document.getElementById("prevBtn").disabled = index === 0;
+        document.getElementById("nextBtn").disabled = index === totalSlides - 1;
+      }
+
+      function changeSlide(direction) {
+        const newIndex = currentSlideIndex + direction;
+
+        if (newIndex >= 0 && newIndex < totalSlides) {
+          currentSlideIndex = newIndex;
+          showSlide(currentSlideIndex);
+        }
+      }
+
+      function goToSlide(index) {
+        if (index >= 0 && index < totalSlides) {
+          currentSlideIndex = index;
+          showSlide(currentSlideIndex);
+        }
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      }
+
+      function toggleShortcuts() {
+        shortcutsVisible = !shortcutsVisible;
+        const shortcuts = document.getElementById("shortcuts");
+        shortcuts.classList.toggle("show", shortcutsVisible);
+      }
+
+      // Keyboard event listeners
+      document.addEventListener("keydown", function (e) {
+        switch (e.key) {
+          case "ArrowLeft":
+          case "ArrowUp":
+            e.preventDefault();
+            changeSlide(-1);
+            break;
+          case "ArrowRight":
+          case "ArrowDown":
+          case " ":
+          case "Enter":
+            e.preventDefault();
+            changeSlide(1);
+            break;
+          case "Home":
+            e.preventDefault();
+            goToSlide(0);
+            break;
+          case "End":
+            e.preventDefault();
+            goToSlide(totalSlides - 1);
+            break;
+          case "f":
+          case "F":
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+          case "Escape":
+            if (document.fullscreenElement) {
+              document.exitFullscreen();
+            }
+            if (shortcutsVisible) {
+              toggleShortcuts();
+            }
+            break;
+          case "?":
+            e.preventDefault();
+            toggleShortcuts();
+            break;
+        }
+      });
+
+      // Mouse/touch navigation
+      let startX = 0;
+      let endX = 0;
+
+      document.addEventListener("touchstart", function (e) {
+        startX = e.changedTouches[0].screenX;
+      });
+
+      document.addEventListener("touchend", function (e) {
+        endX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = startX - endX;
+
+        if (Math.abs(diff) > swipeThreshold) {
+          if (diff > 0) {
+            // Swipe left - next slide
+            changeSlide(1);
+          } else {
+            // Swipe right - previous slide
+            changeSlide(-1);
+          }
+        }
+      }
+
+      // Auto-hide shortcuts after 5 seconds
+      setTimeout(() => {
+        if (shortcutsVisible) {
+          toggleShortcuts();
+        }
+      }, 5000);
+
+      // Initialize
+      showSlide(0);
+
+      // Show shortcuts initially
+      setTimeout(() => {
+        toggleShortcuts();
+      }, 1000);
+    </script>
+  </body>
+</html>
